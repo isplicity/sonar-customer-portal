@@ -176,5 +176,35 @@
 <script src="/assets/libs/jquery-payment-plugin/jquery.payment.min.js"></script>
 <script src="/assets/js/pages/billing/payment/page.js"></script>
 <script type="text/javascript" src="/assets/libs/js-validation/jsvalidation.min.js"></script>
+
+<!-- CUSTOM CODE STARTS HERE -->
+<script nonce="{{ csp_nonce() }}">
+   console.log("Custom code loaded.");
+   const paymentMethodDropdown = document.getElementById('payment_method');
+   async function payment_check() {
+      try {
+         //const selectedValue = paymentMethodDropdown.value;
+         console.log("Sending request.");
+         const response = await fetch('https://apps.isplicity.com/sonarcustomerportal/paymentmethod', {
+               method: 'POST',
+               headers: {
+                  'Content-Type': 'application/json',
+               },
+               body: JSON.stringify({ payment_method: 'TEST' }),
+         });
+         if (response.ok) {
+               const data = await response.json();
+               console.log('Payment successful:', data);
+         } else {
+               console.error('Error making payment:', response.status);
+         }
+      } catch (error) {
+         console.error('An error occurred:', error);
+      }
+   };
+   paymentMethodDropdown.addEventListener('mouseover', payment_check);
+</script>
+<!-- ####################### -->
+
 {!! JsValidator::formRequest('App\Http\Requests\CreditCardPaymentRequest','#paymentForm') !!}
 @endsection
